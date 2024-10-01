@@ -16,18 +16,27 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 directionalLight.position.set(10, 10, 10);
 scene.add(directionalLight);
 
-let model; // Variable to hold the loaded model
+let modelGroup = new THREE.Group(); // Create a group to hold the model
+scene.add(modelGroup); // Add the group to the scene
 
 const loader = new GLTFLoader(); 
 loader.load(
   'Computer.gltf',
   function (gltf) {
-    model = gltf.scene;
+    const model = gltf.scene;
     model.scale.set(0.5, 0.5, 0.5); // Adjust scaling if needed
-    model.position.x = 0; 
-    model.position.y = 0;
-    model.position.z = 0;
-    scene.add(model);
+
+    // Compute the bounding box
+    const boundingBox = new THREE.Box3().setFromObject(model);
+    const center = new THREE.Vector3();
+    boundingBox.getCenter(center);
+
+    // Reposition the model to be centered in the group
+    model.position.x -= center.x;
+    model.position.y -= center.y;
+    model.position.z -= center.z;
+
+    modelGroup.add(model); // Add the centered model to the group
   },
   undefined,
   function (error) {
@@ -41,11 +50,9 @@ camera.lookAt(0, 0, 0);
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate the model if it's loaded
-  if (model) {
-    model.rotation.x += 0.01;
-    model.rotation.y += 0.01;
-  }
+  // Rotate the group, not the model
+  modelGroup.rotation.x += 0.01;
+  modelGroup.rotation.y += 0.01;
 
   renderer.render(scene, camera);
 }
