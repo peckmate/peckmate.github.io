@@ -24,7 +24,7 @@ loader.load(
   'Computer.gltf',
   function (gltf) {
     const model = gltf.scene;
-    model.scale.set(0.5, 0.5, 0.5); // Adjust scaling if needed
+    model.scale.set(0.3, 0.3, 0.3); // Further adjust scaling if needed
 
     // Compute the bounding box
     const boundingBox = new THREE.Box3().setFromObject(model);
@@ -44,15 +44,18 @@ loader.load(
   }
 );
 
-camera.position.set(0, 2, 5); // Adjust the camera position
+// Move the camera back further for a wider view
+camera.position.set(0, 2, 10); // Adjust the distance to fit the whole model in view
 camera.lookAt(0, 0, 0);
 
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate the group, not the model
-  modelGroup.rotation.x += 0.01;
-  modelGroup.rotation.y += 0.01;
+  // Rotate the group more slowly
+  if (modelGroup) {
+    modelGroup.rotation.x += 0.005; // Adjust speed if needed
+    modelGroup.rotation.y += 0.005;
+  }
 
   renderer.render(scene, camera);
 }
